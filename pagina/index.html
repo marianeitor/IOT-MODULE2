@@ -7,10 +7,26 @@
     <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
+<div class="container">
     <h1>Configuración</h1>
-<form action="/config" method="POST">
-    ESSID: <input type="text" name="essid">
-    <input type="submit" value="Enviar">
-</form>
+    <form action="/config" method="POST">
+        <div class="row">
+            <div class="col-25">
+                ESSID:
+            </div>
+            <div class="col-75">
+                <input type="text" name="essid"><br>
+            </div>
+        </div>
+            PASSWORD: <input type="text" name="pass"><br>
+        MQTT SERVER: <input type="text" name="mqttServer"><br>
+        MQTT PORT: <input type="text" name="mqttPort"><br>
+        MQTT USER: <input type="text" name="mqttUser"><br>
+        MQTT PASSWORD: <input type="text" name="mqttPass"><br>
+        CLIENT ID: <input type="text" name="clientId"><br>
+        MQTT TOPIC: <input type="text" name="mqttTopic"><br>
+        <input type="submit" value="Enviar"><br>
+    </form>
+</div>
 </body>
 </html>
