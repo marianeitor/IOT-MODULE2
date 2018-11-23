@@ -24,7 +24,7 @@
                 <div class="form-group">
                     <label for="essid">Red</label>
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="essid" placeholder="Red" aria-label="Recipient's username" aria-describedby="essidHelp" name="essid">
+                        <input type="text" class="form-control" id="essid" placeholder="Red" aria-label="Recipient's username" aria-describedby="essidHelp" onkeydown="enablePassField()" name="essid">
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary" type="button" onclick="buscarRedes()">Buscar Redes</button>
                         </div>
@@ -34,7 +34,7 @@
                 <div class="form-group">
                     <label for="pass">Contraseña</label>
                     <div class="input-group mb-3">
-                        <input type="password" class="form-control" id="pass" placeholder="Constraseña" aria-label="Ingresar contraseña de red" aria-describedby="passHelp" name="pass">
+                        <input type="password" class="form-control" id="pass" placeholder="Contraseña" aria-label="Ingresar contraseña de red" aria-describedby="passHelp" name="pass">
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary" type="button" onclick="togglePassVisible()">Mostrar Contraseña</button>
                         </div>
