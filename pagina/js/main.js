@@ -18,6 +18,20 @@ function getData() {
 
 }
 
+function getMqttStatus() {
+    fetch('/getMqttStatus').then(function (response) {
+        response.json().then(function (json) {
+            if (json.CONNECTED) {
+                document.getElementById("mqttStatus").style.color = "#5cb85c";
+                document.getElementById("mqttStatus").innerText = "Conectado";
+            }
+            else {
+                document.getElementById("mqttStatus").style.color = "#d9534f";
+                document.getElementById("mqttStatus").innerText = "Desconectado";
+            }
+        });
+    });
+}
 
 function buscarRedes() {
     document.getElementById("networkLoader").style.display = "";
@@ -55,4 +69,18 @@ function setSSID(ssid) {
 
 }
 
+function togglePassVisible() {
+    var passwordFiel = document.getElementById('pass');
+    if (passwordFiel.type == 'password') {
+        passwordFiel.type = 'text';
+    }
+    else {
+        passwordFiel.type = 'password';
+    }
+}
+
 getData();
+getMqttStatus();
+setInterval(function() {
+    getMqttStatus();
+}, 5000);

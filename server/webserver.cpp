@@ -211,11 +211,27 @@ void handleGetNetworks() {
   server.send(200, "application/json", ret);
 }
 
+void handleGetMqttStatus() {
+
+  String ret = "";
+ 
+ if (isMqttConnected()) {
+  ret = "{\"CONNECTED\" : true}";
+ }
+ else {
+  ret = "{\"CONNECTED\" : false}";
+ }
+  Serial.println(ret);
+  server.send(200, "application/json", ret);
+}
+
+
 void WebServer_init() {
   server.on("/", handleRoot);
   server.on("/configMqtt", handleConfig);
   server.on("/configNetwork", handleConfigNetwork);
   server.on("/getData", handleGetData);
+  server.on("/getMqttStatus", handleGetMqttStatus);
   server.on("/getNetworks", handleGetNetworks);
   server.onNotFound(handleNotFound);
   server.begin();
