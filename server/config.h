@@ -6,7 +6,7 @@ typedef struct {
   // Broker
   char broker_add[50];
   char broker_user[50];
-  char broker_pass[50];
+  char broker_pass[100];
   int broker_puerto;
   char broker_topic[100];
   char clientID[10];

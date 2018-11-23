@@ -1,5 +1,7 @@
 #include "webserver.h"
 #include "config.h"
+#include "mqtt.h"
+#include "network.h"
 #include "index.html.gz.h"
 #include <EEPROM.h>
 
@@ -11,24 +13,19 @@ void handleRoot() {
 }
 
 void handleConfig() {
+  config_t antConf;
   config_t newConf;
 
-  char essid[50];
-  char pass[50];
-  char mqttServer[50];
-  char mqttPass[50];
-  char clientId[50];
-  char mqttTopic[100];
+  EEPROM.get(0, antConf);
 
-  Serial.println("SSID");
-  Serial.println(server.arg("essid"));
-  
-  server.arg("essid").toCharArray(newConf.essid, sizeof(newConf.essid));
-  server.arg("pass").toCharArray(newConf.pass, sizeof(newConf.pass));
+  strcpy(newConf.essid, antConf.essid);
+  strcpy(newConf.pass, antConf.pass);
+   
+  //server.arg("essid").toCharArray(newConf.essid, sizeof(newConf.essid));
+  //server.arg("pass").toCharArray(newConf.pass, sizeof(newConf.pass));
   server.arg("mqttServer").toCharArray(newConf.broker_add, sizeof(newConf.broker_add));
   newConf.broker_puerto = server.arg("mqttPort").toInt();
-  //server.arg("mqttPort").toCharArray(newConf.broker_puerto, sizeof(newConf.broker_puerto));
-  server.arg("mqttPass").toCharArray(newConf.broker_pass, sizeof(sizeof(newConf.broker_pass)));
+  server.arg("mqttPass").toCharArray(newConf.broker_pass, sizeof(newConf.broker_pass));
   server.arg("mqttUser").toCharArray(newConf.broker_user, sizeof(newConf.broker_user));
   server.arg("clientId").toCharArray(newConf.clientID, sizeof(newConf.clientID));
   server.arg("mqttTopic").toCharArray(newConf.broker_topic, sizeof(newConf.broker_topic));
@@ -50,9 +47,65 @@ void handleConfig() {
   EEPROM.put(0, newConf);
   EEPROM.commit();  
 
-  server.send(200,"text/plain",newConf.essid);
+  connectMQTT();
+
+  server.sendHeader("Location", String("/?status=OK"), true);
+  server.send ( 302, "text/plain", "");
+  
   //server.sendHeader("Content-Encoding", "gzip");
   //server.send_P(200, "text/html", index_html_gz, index_html_gz_len);
+}
+
+void handleConfigNetwork() {
+  config_t antConf;
+  config_t newConf;
+
+  EEPROM.get(0, antConf);
+
+  strcpy(newConf.broker_add, antConf.broker_add);
+  newConf.broker_puerto = antConf.broker_puerto;
+  
+  strcpy(newConf.broker_pass, antConf.broker_pass);
+  strcpy(newConf.broker_user, antConf.broker_user);
+  
+  strcpy(newConf.clientID, antConf.clientID);
+  strcpy(newConf.broker_topic, antConf.broker_topic);
+   
+  server.arg("essid").toCharArray(newConf.essid, sizeof(newConf.essid));
+  server.arg("pass").toCharArray(newConf.pass, sizeof(newConf.pass));
+  
+  /*server.arg("mqttServer").toCharArray(newConf.broker_add, sizeof(newConf.broker_add));
+  newConf.broker_puerto = server.arg("mqttPort").toInt();
+  server.arg("mqttPass").toCharArray(newConf.broker_pass, sizeof(newConf.broker_pass));
+  server.arg("mqttUser").toCharArray(newConf.broker_user, sizeof(newConf.broker_user));
+  server.arg("clientId").toCharArray(newConf.clientID, sizeof(newConf.clientID));
+  server.arg("mqttTopic").toCharArray(newConf.broker_topic, sizeof(newConf.broker_topic));*/
+
+  Serial.println("SSID");
+  Serial.println(newConf.essid);
+   Serial.println("PASSWORD");
+  Serial.println(newConf.pass);
+  Serial.println("BROKER");
+  Serial.println(newConf.broker_add);
+  Serial.println("PORT");
+  Serial.println(newConf.broker_puerto);
+  Serial.println("TOPIC");
+  Serial.println(newConf.broker_topic);
+  Serial.println("USER");
+  Serial.println(newConf.broker_user);
+  Serial.println("PASS");
+  Serial.println(newConf.broker_pass);
+
+  //EEPROM.begin(sizeof(config_t));
+  EEPROM.put(0, newConf);
+  EEPROM.commit();  
+
+  connectNetwork();
+  connectMQTT();
+  
+  server.sendHeader("Location", String("/?status=OK"), true);
+  server.send ( 302, "text/plain", "");
+  
 }
 
 void handleNotFound() {
@@ -113,12 +166,61 @@ void handleGetData() {
   server.send(200, "application/json", ret);
 }
 
+void handleGetNetworks() {
+   int n = WiFi.scanNetworks();
+
+    String ret = "[";
+    
+   for (int i = 0; i < n; ++i) {
+
+      float signalLevel = WiFi.RSSI(i);
+      signalLevel = isnan(signalLevel) ? -100.0 : signalLevel;
+      signalLevel = min(max(2 * (signalLevel + 100.0), 0.0), 100.0);
+      
+      ret += "{ ";
+      ret += "\"ESSID\" : ";
+      
+      ret += "\"";
+      ret += WiFi.SSID(i);
+      ret += "\",";
+
+      ret += "\"RSSI\" : ";
+      
+      ret += "\"";
+      ret += WiFi.RSSI(i);
+      ret += "\",";
+
+      ret += "\"SIGNAL_LEVEL\" : ";
+      
+      ret += "\"";
+      ret += signalLevel;
+      ret += "\",";
+
+      ret += "\"ENCRYPTION\" : ";
+      
+      ret += "\"";
+      ret += (WiFi.encryptionType(i) == ENC_TYPE_NONE) ? false : true;
+      ret += "\" },";
+
+   }
+
+    ret = ret.substring(0, ret.length() - 1);
+   ret += "]";
+
+  Serial.println(ret);
+  server.send(200, "application/json", ret);
+}
+
 void WebServer_init() {
   server.on("/", handleRoot);
-  server.on("/config", handleConfig);
+  server.on("/configMqtt", handleConfig);
+  server.on("/configNetwork", handleConfigNetwork);
   server.on("/getData", handleGetData);
+  server.on("/getNetworks", handleGetNetworks);
   server.onNotFound(handleNotFound);
   server.begin();
+
+    Serial.println("HTTP server started");
 }
 
 void WebServer_stop() {
