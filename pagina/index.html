@@ -4,29 +4,103 @@
     <meta charset="UTF-8">
     <title>IOT - Config</title>
     <script src="js/main.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/estilos.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <div class="container">
-    <h1>Configuración</h1>
-    <form action="/config" method="POST">
-        <div class="row">
-            <div class="col-25">
-                ESSID:
+    <div class="row">
+        <h1>Panel de Configuración</h1>
+    </div>
+    <div class="row">
+        <hr>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="row">
+                <div class="col-lg-12">
+            <form action="/configNetwork" method="POST">
+                <div class="form-group">
+                    <label for="essid">Red</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="essid" placeholder="Red" aria-label="Recipient's username" aria-describedby="essidHelp" name="essid">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" onclick="buscarRedes()">Buscar Redes</button>
+                        </div>
+                    </div>
+                    <small id="essidHelp" class="form-text text-muted">Nombre de la red a la que se desea conectar.</small>
+                </div>
+                <div class="form-group">
+                    <label for="pass">Contraseña</label>
+                    <input type="password" class="form-control" id="pass" aria-describedby="passHelp" placeholder="Ingresar Contraseña" name="pass">
+                    <small id="passHelp" class="form-text text-muted">Contraseña de la red.</small>
+                </div>
+
+                <input type="submit" class=" btn btn-outline-secondary" value="Enviar"><br>
+            </form>
             </div>
-            <div class="col-75">
-                <input type="text" name="essid"><br>
             </div>
+            <br>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div id="networkLoader" style="text-align: center; display:none;"><div class="lds-css ng-scope"><div style="width:100%;height:100%" class="lds-rolling"><div></div></div></div></div>
+                    <table class="table table-hover" id="networksList" style="display: none">
+                        <thead>
+                            <tr>
+                                <th scope="col">SSID</th>
+                                <th scope="col">Seguridad</th>
+                                <th scope="col">Señal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="networksListBody">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+            <div class="col-lg-6">
+                <form action="/configMqtt" method="POST">
+
+                <div class="form-group">
+                    <label for="mqttServer">Servidor MQTT</label>
+                    <input type="text" class="form-control" id="mqttServer" aria-describedby="mqttServerHelp" placeholder="Dirección Broker MQTT" name="mqttServer">
+                    <small id="mqttServerHelp" class="form-text text-muted">Ingrese la IP o dominio del servidor MQTT.</small>
+                </div>
+                <div class="form-group">
+                    <label for="mqttPort">Puerto MQTT</label>
+                    <input type="text" class="form-control" id="mqttPort" aria-describedby="mqttPortHelp" placeholder="Puerto Broker MQTT" name="mqttPort">
+                    <small id="mmqttPortHelp" class="form-text text-muted">Ingrese el puerto del servidor MQTT.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="mqttUser">Usuario MQTT</label>
+                    <input type="text" class="form-control" id="mqttUser" aria-describedby="mqttUserHelp" placeholder="Usuario MQTT" name="mqttUser">
+                    <small id="mqttUserHelp" class="form-text text-muted">Ingrese el usuario del servidor MQTT.</small>
+                </div>
+                <div class="form-group">
+                    <label for="mqttPass">Contraseña MQTT</label>
+                    <input type="password" class="form-control" id="mqttPass" aria-describedby="mmqttPassHelp" placeholder="Contraseña MQTT" name="mqttPass">
+                    <small id="mqttPassHelp" class="form-text text-muted">Ingrese la contraseña del servidor MQTT.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="clientId">Cliente MQTT</label>
+                    <input type="text" class="form-control" id="clientId" aria-describedby="clientIdHelp" placeholder="Cliente MQTT" name="clientId">
+                    <small id="clientIdHelp" class="form-text text-muted">Ingrese nombre del cliente MQTT.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="mqttTopic">Topic MQTT</label>
+                    <input type="text" class="form-control" id="mqttTopic" aria-describedby="mqttTopicHelp" placeholder="Topic MQTT" name="mqttTopic">
+                    <small id="mqttTopicHelp" class="form-text text-muted">Ingrese el topic alque desea suscribir el cliente.</small>
+                </div>
+
+                <input type="submit" class="btn btn-outline-secondary" value="Enviar"><br>
+            </form>
         </div>
-            PASSWORD: <input type="text" name="pass"><br>
-        MQTT SERVER: <input type="text" name="mqttServer"><br>
-        MQTT PORT: <input type="text" name="mqttPort"><br>
-        MQTT USER: <input type="text" name="mqttUser"><br>
-        MQTT PASSWORD: <input type="text" name="mqttPass"><br>
-        CLIENT ID: <input type="text" name="clientId"><br>
-        MQTT TOPIC: <input type="text" name="mqttTopic"><br>
-        <input type="submit" value="Enviar"><br>
-    </form>
+</div>
 </div>
 </body>
 </html>
