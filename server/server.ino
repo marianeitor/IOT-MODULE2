@@ -1,7 +1,3 @@
-
-
-#include <ESP8266mDNS.h>
-#include <DNSServer.h>
 #include <EEPROM.h>
 #include "config.h"
 #include "mqtt.h"
@@ -37,21 +33,7 @@ void setup(void) {
   pinMode(13, INPUT_PULLUP);
 
   EEPROM.begin(sizeof(config_t));
-  //EEPROM.put(0, conf);
-  //EEPROM.commit();
-
-  EEPROM.get(0, conf);
  
- 
-
-  //WiFi.softAPConfig(apIP, apIP, netMsk);
-  //WiFi.softAP("TestIOT-rmm", "");
-
-  // Wait for connection
-
-  //Serial.print("IP address: ");
-  //Serial.println(WiFi.softAPIP());
-
   /*if (MDNS.begin("esp8266")) {
     Serial.println("MDNS responder started");
     } else {
@@ -62,19 +44,15 @@ void setup(void) {
   connectNetwork();
   WebServer_init();
 
-  //dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
-  //dnsServer.start(53, "*", apIP);
-
 
   if (isNetworkConnected()) {
     connectMQTT();
   }
 }
 void loop(void) {
-  //DNS
-  //dnsServer.processNextRequest();
-  //HTTP
+  
   WebServer_loop();
+  proccessNextDnsReq();
 
   timer++;
   timerConnectMqtt++;

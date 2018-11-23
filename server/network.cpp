@@ -1,6 +1,9 @@
 #include "network.h"
 #include "config.h"
 #include <EEPROM.h>
+#include <DNSServer.h>
+
+DNSServer dnsServer;              // Create the DNS object
 
 void connectNetwork() {
   config_t conf;
@@ -40,6 +43,11 @@ boolean isNetworkConnected() {
   }
 }
 
+void startDnsServer(IPAddress localIp) {
+   Serial.print("Starting DNS server");
+  dnsServer.start(53, "*", localIp);
+}
+
 void startAP() {
    Serial.print("Starting AP");
     
@@ -52,8 +60,15 @@ void startAP() {
   Serial.print("Soft-AP IP address = ");
   Serial.println(WiFi.softAPIP());
 
+  startDnsServer(localIp);
+
+}
+void proccessNextDnsReq() {
+  dnsServer.processNextRequest();
 }
 void stopAP() {
  WiFi.softAPdisconnect(true);
+ dnsServer.stop();
 }
+
 

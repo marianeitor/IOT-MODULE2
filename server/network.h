@@ -3,3 +3,5 @@ void connectNetwork();
 boolean isNetworkConnected();
 void startAP();
 void stopAP();
+
+void proccessNextDnsReq();

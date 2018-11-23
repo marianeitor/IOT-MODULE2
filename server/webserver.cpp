@@ -225,6 +225,19 @@ void handleGetMqttStatus() {
   server.send(200, "application/json", ret);
 }
 
+void handleGetSensorData() {
+  String ret = "";
+ 
+ if (digitalRead(13)) {
+  ret = "{\"SENSOR\" : true}";
+ }
+ else {
+  ret = "{\"SENSOR\" : false}";
+ }
+  Serial.println(ret);
+  server.send(200, "application/json", ret);
+}
+
 
 void WebServer_init() {
   server.on("/", handleRoot);
@@ -232,6 +245,7 @@ void WebServer_init() {
   server.on("/configNetwork", handleConfigNetwork);
   server.on("/getData", handleGetData);
   server.on("/getMqttStatus", handleGetMqttStatus);
+  server.on("/getSensorData", handleGetSensorData);
   server.on("/getNetworks", handleGetNetworks);
   server.onNotFound(handleNotFound);
   server.begin();

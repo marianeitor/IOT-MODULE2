@@ -23,11 +23,26 @@ function getMqttStatus() {
         response.json().then(function (json) {
             if (json.CONNECTED) {
                 document.getElementById("mqttStatus").style.color = "#5cb85c";
-                document.getElementById("mqttStatus").innerText = "Conectado";
+                document.getElementById("mqttStatus").innerHTML = "Conectado";
             }
             else {
                 document.getElementById("mqttStatus").style.color = "#d9534f";
-                document.getElementById("mqttStatus").innerText = "Desconectado";
+                document.getElementById("mqttStatus").innerHTML = "Desconectado";
+            }
+        });
+    });
+}
+
+function getSensorData() {
+    fetch('/getSensorData').then(function (response) {
+        response.json().then(function (json) {
+            if (json.SENSOR) {
+                document.getElementById("sensorData").style.color = "#5cb85c";
+                document.getElementById("sensorData").innerHTML = "Activado";
+            }
+            else {
+                document.getElementById("sensorData").style.color = "#d9534f";
+                document.getElementById("sensorData").innerHTML = "Desactivado";
             }
         });
     });
@@ -91,8 +106,8 @@ function enablePassField() {
     el['pass'].disabled = "";
 }
 
-function togglePassVisible() {
-    var passwordFiel = document.getElementById('pass');
+function togglePassVisible(field) {
+    var passwordFiel = document.getElementById(field);
     if (passwordFiel.type == 'password') {
         passwordFiel.type = 'text';
     }
@@ -106,3 +121,6 @@ getMqttStatus();
 setInterval(function() {
     getMqttStatus();
 }, 5000);
+setInterval(function() {
+    getSensorData();
+}, 2000);

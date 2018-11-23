@@ -36,7 +36,7 @@
                     <div class="input-group mb-3">
                         <input type="password" class="form-control" id="pass" placeholder="Contraseña" aria-label="Ingresar contraseña de red" aria-describedby="passHelp" name="pass">
                         <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassVisible()">Mostrar Contraseña</button>
+                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassVisible('pass')">Mostrar Contraseña</button>
                         </div>
                     </div>
                     <small id="passHelp" class="form-text text-muted">Contraseña de la red.</small>
@@ -68,7 +68,16 @@
                 <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        Estado de conexión MQTT: <span id="mqttStatus" style="font-weight: bold"></span>
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-6" style="text-align: right">Estado de conexión MQTT:</div>
+                                <div class="col-lg-6"><span id="mqttStatus" style="font-weight: bold"><div class="lds-css ng-scope"><div style="width:100%;height:100%" class="lds-rolling"><div></div></div></div></span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6" style="text-align: right">Dato actual del Sensor:</div>
+                                <div class="col-lg-6"><span id="sensorData" style="font-weight: bold"><div class="lds-css ng-scope"><div style="width:100%;height:100%" class="lds-rolling"><div></div></div></div></span></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 </div>
@@ -95,7 +104,12 @@
                 </div>
                 <div class="form-group">
                     <label for="mqttPass">Contraseña MQTT</label>
-                    <input type="password" class="form-control" id="mqttPass" aria-describedby="mmqttPassHelp" placeholder="Contraseña MQTT" name="mqttPass">
+                    <div class="input-group mb-3">
+                        <input type="password" class="form-control" id="mqttPass" placeholder="Contraseña MQTT" aria-label="Contrseña del servidor MQTT" aria-describedby="mqttPassHelp" name="mqttPass">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassVisible('mqttPass')">Mostrar Contraseña</button>
+                        </div>
+                    </div>
                     <small id="mqttPassHelp" class="form-text text-muted">Ingrese la contraseña del servidor MQTT.</small>
                 </div>
 
