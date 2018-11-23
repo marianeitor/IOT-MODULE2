@@ -6,7 +6,7 @@ function getData() {
             var el = document.forms[0];
             el['essid'].value = json.essid;
             el['pass'].value = json.pass;
-            el = document.forms[1];
+            el = document.forms[2];
             el['mqttServer'].value = json.brokerAdd;
             el['mqttUser'].value = json.brokerUser;
             el['mqttPass'].value = json.brokerPass;

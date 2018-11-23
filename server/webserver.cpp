@@ -3,11 +3,20 @@
 #include "mqtt.h"
 #include "network.h"
 #include "index.html.gz.h"
+#include "base64.h"
 #include <EEPROM.h>
 
 ESP8266WebServer server(80);
 
 void handleRoot() {
+  config_t conf;
+  EEPROM.get(0, conf);
+
+  if (conf.admin_protected == 1) {
+    if (!server.authenticate(conf.admin_user,conf.admin_password)) {
+       return server.requestAuthentication();
+    }
+  }
   server.sendHeader("Content-Encoding", "gzip");
   server.send_P(200, "text/html", index_html_gz, index_html_gz_len);
 }
@@ -20,9 +29,11 @@ void handleConfig() {
 
   strcpy(newConf.essid, antConf.essid);
   strcpy(newConf.pass, antConf.pass);
+
+  strcpy(newConf.admin_user, antConf.admin_user);
+  strcpy(newConf.admin_password, antConf.admin_password);
+  newConf.admin_protected = antConf.admin_protected;
    
-  //server.arg("essid").toCharArray(newConf.essid, sizeof(newConf.essid));
-  //server.arg("pass").toCharArray(newConf.pass, sizeof(newConf.pass));
   server.arg("mqttServer").toCharArray(newConf.broker_add, sizeof(newConf.broker_add));
   newConf.broker_puerto = server.arg("mqttPort").toInt();
   server.arg("mqttPass").toCharArray(newConf.broker_pass, sizeof(newConf.broker_pass));
@@ -70,6 +81,10 @@ void handleConfigNetwork() {
   
   strcpy(newConf.clientID, antConf.clientID);
   strcpy(newConf.broker_topic, antConf.broker_topic);
+
+  strcpy(newConf.admin_user, antConf.admin_user);
+  strcpy(newConf.admin_password, antConf.admin_password);
+  newConf.admin_protected = antConf.admin_protected;
    
   server.arg("essid").toCharArray(newConf.essid, sizeof(newConf.essid));
   server.arg("pass").toCharArray(newConf.pass, sizeof(newConf.pass));
@@ -102,6 +117,52 @@ void handleConfigNetwork() {
 
   connectNetwork();
   connectMQTT();
+  
+  server.sendHeader("Location", String("/?status=OK"), true);
+  server.send ( 302, "text/plain", "");
+  
+}
+
+void handleConfigAdmin() {
+  config_t antConf;
+
+  EEPROM.get(0, antConf);
+
+  if (server.arg("adminPass") == "" && server.arg("adminUser") == "") {
+    antConf.admin_protected = 0;
+  }
+  else {
+    antConf.admin_protected = 1;
+  }
+
+  server.arg("adminPass").toCharArray(antConf.admin_password, sizeof(antConf.admin_password));
+  server.arg("adminUser").toCharArray(antConf.admin_user, sizeof(antConf.admin_user));
+  
+
+  Serial.println("SSID");
+  Serial.println(antConf.essid);
+   Serial.println("PASSWORD");
+  Serial.println(antConf.pass);
+  Serial.println("BROKER");
+  Serial.println(antConf.broker_add);
+  Serial.println("PORT");
+  Serial.println(antConf.broker_puerto);
+  Serial.println("TOPIC");
+  Serial.println(antConf.broker_topic);
+  Serial.println("USER");
+  Serial.println(antConf.broker_user);
+  Serial.println("PASS");
+  Serial.println(antConf.broker_pass);
+   Serial.println("ADMIN USER");
+  Serial.println(antConf.admin_user);
+   Serial.println("ADMIN PASS");
+  Serial.println(antConf.admin_password);
+  Serial.println("ADMIN PROTECTED");
+  Serial.println(antConf.admin_protected);
+  
+  //EEPROM.begin(sizeof(config_t));
+  EEPROM.put(0, antConf);
+  EEPROM.commit();  
   
   server.sendHeader("Location", String("/?status=OK"), true);
   server.send ( 302, "text/plain", "");
@@ -243,6 +304,7 @@ void WebServer_init() {
   server.on("/", handleRoot);
   server.on("/configMqtt", handleConfig);
   server.on("/configNetwork", handleConfigNetwork);
+  server.on("/configAdmin", handleConfigAdmin);
   server.on("/getData", handleGetData);
   server.on("/getMqttStatus", handleGetMqttStatus);
   server.on("/getSensorData", handleGetSensorData);

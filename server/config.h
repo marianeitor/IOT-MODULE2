@@ -12,6 +12,8 @@ typedef struct {
   char clientID[10];
 
   //extras
-  char admin_password[20];
+  char admin_user[50];
+  char admin_password[50];
+  int admin_protected;
   char has_batt;  
 } config_t;

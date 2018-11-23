@@ -5,3 +5,5 @@ void startAP();
 void stopAP();
 
 void proccessNextDnsReq();
+
+void factoryReset();

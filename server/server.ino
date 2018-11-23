@@ -16,6 +16,7 @@ config_t conf;
 
 int timer = 0;
 bool lastState = false;
+int rstCounter = 0;
 
 
 
@@ -25,12 +26,12 @@ bool lastState = false;
 //IPAddress apIP(192, 168, 0, 200);
 //IPAddress netMsk(255, 255, 255, 0);
 
-int led = 13;
 
 void setup(void) {
 
   Serial.begin(115200);
-  pinMode(13, INPUT_PULLUP);
+  pinMode(13, INPUT_PULLUP); //PIN D7
+  pinMode(15, INPUT); //PIN D8
 
   EEPROM.begin(sizeof(config_t));
  
@@ -50,6 +51,17 @@ void setup(void) {
   }
 }
 void loop(void) {
+
+  /*if (!digitalRead(15)) {
+    if (rstCounter >= 10) {
+      factoryReset();
+    }
+    else {
+      rstCounter++;
+      Serial.println("Resetting");
+      Serial.println(rstCounter);
+    }
+  }*/
   
   WebServer_loop();
   proccessNextDnsReq();

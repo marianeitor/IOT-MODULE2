@@ -11,6 +11,7 @@ void connectNetwork() {
   EEPROM.get(0, conf);
 
   stopAP();
+  WiFi.mode(WIFI_STA);
   Serial.println("Attemping to connect to");
   Serial.println(conf.essid);
 
@@ -50,6 +51,7 @@ void startDnsServer(IPAddress localIp) {
 
 void startAP() {
    Serial.print("Starting AP");
+    WiFi.mode(WIFI_AP);
     
   IPAddress localIp(192,168,0,1);
   IPAddress subntMask(255,255,255,0);
@@ -69,6 +71,15 @@ void proccessNextDnsReq() {
 void stopAP() {
  WiFi.softAPdisconnect(true);
  dnsServer.stop();
+}
+
+void factoryReset() {
+  config_t conf;
+
+   EEPROM.put(0, conf);
+  EEPROM.commit(); 
+
+  connectNetwork();
 }
 
 
